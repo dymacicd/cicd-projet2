@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        path: ['frontend', 'node-api']
+        path: ['node-api']
         include:
           - path: 'frontend'
             full_image_name: ghcr.io/${{ github.repository }}/frontend
