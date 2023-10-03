@@ -6,7 +6,72 @@ on:
       - main
 
 jobs:
+  tests_frontend: 
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout le code
+      uses: actions/checkout@v4
+
+    - name: installer Node.js
+      uses: actions/setup-node@v3 
+      with:
+        cache: 'npm'
+        cache-dependency-path: client/package-lock.json
+
+    - name: installer les dépendances
+      run: |
+        cd client
+        npm ci --cache .npm --prefer-offline
+
+    - name: vérifie les vulnérabilités
+      run: |
+        cd client
+        npm audit
+    - name: vérifie le code
+      run: |
+        cd client
+        npm run lint
+    # On pourrait lancer des tests unitaires ici
+
+  tests_backend:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout le code
+      uses: actions/checkout@v4
+
+    - name: installer Node.js
+      uses: actions/setup-node@v3 # défaut = LTS
+      with:
+        cache: 'npm'
+        cache-dependency-path: server/package-lock.json
+
+    - name: installer les dépendances
+      run: |
+        cd server
+        npm ci --cache .npm --prefer-offline
+          
+    - name: exécute les tests
+      run: |
+        cd server
+        npm run test:ci
+          
+    - name: vérifie le code
+      run: |
+        cd server
+        npm run lint
+          
+    - name: vérifie les vulnérabilités
+      run: |
+        cd server
+        npm audit
+
+    - name: Upload du rapport de couverture sur Codecov
+      uses: codecov/codecov-action@v3
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
   build:
+    needs: [tests_frontend, tests_backend]
     runs-on: ubuntu-latest
     permissions:
       packages: write
