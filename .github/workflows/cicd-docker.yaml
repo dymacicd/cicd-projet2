@@ -147,37 +147,25 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: staging
-      url: http://${{ env.SERVER_STAGING }}
     steps:
     - name: checkout le code
       uses: actions/checkout@v4
-
-    - name: déployer sur le serveur de préproduction
-      run: |
-        eval $(ssh-agent -s)
-        ssh-add - <<< "${{ secrets.OVH_STAGING_PKEY }}"
-        mkdir -p ~/.ssh
-        ssh-keyscan -H ${{ env.SERVER_STAGING }} >> ~/.ssh/known_hosts
-        scp -r docker-compose.prod.yml ${{ env.SERVER_USER }}@${{ env.SERVER_STAGING }}:/root/docker-compose.prod.yml
-        ssh ${{ env.SERVER_USER }}@${{ env.SERVER_STAGING }} "docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} &&
-          docker compose -f /root/docker-compose.prod.yml up -d --force-recreate"
-
+    - name: déployer
+      uses: ./.github/actions/deploy
+      with:
+        server_ip: SERVER_STAGING
+        secret_key: OVH_STAGING_PKEY
+  
   deploy_production:
     runs-on: ubuntu-latest
-    needs: [deploy_staging]
+    needs: deploy_staging
     environment:
       name: production
-      url: http://${{ env.SERVER_PRODUCTION }}
     steps:
     - name: checkout le code
       uses: actions/checkout@v4
-
-    - name: déployer sur le serveur de production
-      run: |
-        eval $(ssh-agent -s)
-        ssh-add - <<< "${{ secrets.OVH_PROD_PKEY }}"
-        mkdir -p ~/.ssh
-        ssh-keyscan -H ${{ env.SERVER_PRODUCTION }} >> ~/.ssh/known_hosts
-        scp -r docker-compose.prod.yml ${{ env.SERVER_USER }}@${{ env.SERVER_PRODUCTION }}:/root/docker-compose.prod.yml
-        ssh ${{ env.SERVER_USER }}@${{ env.SERVER_PRODUCTION }} "docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} &&
-          docker compose -f /root/docker-compose.prod.yml up -d --force-recreate"
+    - name: déployer
+      uses: ./.github/actions/deploy
+      with:
+        server_ip: SERVER_PRODUCTION
+        secret_key: OVH_PROD_PKEY

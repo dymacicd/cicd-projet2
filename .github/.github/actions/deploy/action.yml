@@ -1,0 +1,22 @@
+name: 'Déployer sur le serveur cible'
+description: 'Effectue un déploiement sur le serveur cible'
+inputs:
+  server_ip:
+    description: 'Adresse IP du serveur cible'
+    required: true
+  secret_key:
+    description: 'Clé secrète pour l authentification SSH'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: déployer sur le serveur
+      shell: bash
+      run: |
+        eval $(ssh-agent -s)
+        ssh-add - <<< "${{ secrets[inputs.secret_key] }}"
+        mkdir -p ~/.ssh
+        ssh-keyscan -H ${{ env[inputs.server_ip] }} >> ~/.ssh/known_hosts
+        scp -r docker-compose.prod.yml ${{ env.SERVER_USER }}@${{ env[inputs.server_ip] }}:/root/docker-compose.prod.yml
+        ssh ${{ env.SERVER_USER }}@${{ env[inputs.server_ip] }} "docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} &&
+          docker compose -f /root/docker-compose.prod.yml up -d --force-recreate"
