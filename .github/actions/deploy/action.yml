@@ -1,6 +1,9 @@
 name: 'Déployer sur le serveur cible'
 description: 'Effectue un déploiement sur le serveur cible'
 inputs:
+  token_github:
+    description: 'Token GitHub'
+    required: true
   server_ip:
     description: 'Adresse IP du serveur cible'
     required: true
@@ -18,5 +21,5 @@ runs:
         mkdir -p ~/.ssh
         ssh-keyscan -H ${{ inputs.server_ip }} >> ~/.ssh/known_hosts
         scp -r docker-compose.prod.yml root@${{ inputs.server_ip }}:/root/docker-compose.prod.yml
-        ssh root@${{ inputs.server_ip }} "docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} &&
+        ssh root@${{ inputs.server_ip }} "docker login ghcr.io -u ${{ github.actor }} -p ${{ inputs.token_github }} &&
           docker compose -f /root/docker-compose.prod.yml up -d --force-recreate"

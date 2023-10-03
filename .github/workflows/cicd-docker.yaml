@@ -156,6 +156,7 @@ jobs:
       with:
         server_ip: ${{ env.SERVER_STAGING }}
         secret_key: ${{ secrets.OVH_STAGING_PKEY }}
+        token_github: ${{ secrets.GITHUB_TOKEN }}
   
   deploy_production:
     runs-on: ubuntu-latest
