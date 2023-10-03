@@ -112,23 +112,42 @@ jobs:
   #         cache-from: type=gha
   #         cache-to: type=gha,mode=max
 
-  e2e:
-    # needs: [build]
+  # e2e:
+  #   needs: [build]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+
+  #     - name: Login sur GitHub Package Registry
+  #       uses: docker/login-action@v3
+  #       with:
+  #         registry: ghcr.io
+  #         username: ${{ github.actor }}
+  #         password: ${{ secrets.GITHUB_TOKEN }}
+
+  #     - name: Lancement des tests E2E
+  #       run: |
+  #         docker compose up --exit-code-from cypress --abort-on-container-exit
+  #     - name: Nettoyage
+  #       run: |
+  #         docker compose down -v --remove-orphans
+
+
+  deploy:
+    # needs: ["e2e"]
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - name: checkout le code
+      uses: actions/checkout@v4
+    
 
-      - name: Login sur GitHub Package Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Lancement des tests E2E
-        run: |
-          docker compose up --exit-code-from cypress --abort-on-container-exit
-      - name: Nettoyage
-        run: |
-          docker compose down -v --remove-orphans
+    - name: déployer sur le serveur
+      run: |
+        eval $(ssh-agent -s)
+        ssh-add - <<< "${{ secrets.OVH_PROD_PKEY }}"
+        mkdir -p ~/.ssh
+        ssh-keyscan -H ${{ env.SERVER_IP }} >> ~/.ssh/known_hosts
+        scp docker-compose.prod.yml ${{ env.SERVER_USER }}@${{ env.SERVER_IP }}:/var/www/docker-compose.prod.yml
+        ssh ${{ env.SERVER_USER }}@${{ env.SERVER_IP }} "docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} &&
+          docker compose -f /var/www/docker-compose.prod.yml up -d --force-recreate"
