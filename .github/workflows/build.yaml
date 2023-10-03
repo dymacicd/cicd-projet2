@@ -28,6 +28,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Récupération des métadonnées
+        id: metadata
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.FRONTEND_IMAGE }}, ${{ env.BACKEND_IMAGE }}
+
       - name: Build et push frontend
         uses: docker/build-push-action@v5
         with:
