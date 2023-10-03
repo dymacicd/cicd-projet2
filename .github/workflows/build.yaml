@@ -5,13 +5,17 @@ on:
     branches:
       - main
 
-env:
-  FRONTEND_IMAGE: ghcr.io/${{ github.repository }}/frontend
-  BACKEND_IMAGE: ghcr.io/${{ github.repository }}/node-api
-
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        path: ['frontend', 'node-api']
+        include:
+          - path: 'frontend'
+            full_image_name: ghcr.io/${{ github.repository }}/frontend
+          - path: 'node-api'
+            full_image_name: ghcr.io/${{ github.repository }}/node-api
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -30,22 +34,13 @@ jobs:
         id: metadata
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.FRONTEND_IMAGE }}, ${{ env.BACKEND_IMAGE }}
+          images: ${{ matrix.full_image_name }}
 
-      - name: Build et push frontend
+      - name: Build et push
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: ${{ env.FRONTEND_IMAGE }}:${{ github.sha }}, ${{ env.FRONTEND_IMAGE }}:latest
-          context: ./frontend
+          tags: ${{ matrix.full_image_name }}:${{ github.sha }}, ${{ matrix.full_image_name }}:latest
+          context: ./${{ matrix.path }}
           cache-from: type=gha
-          cache-to: type=gha,mode=max       
-
-      - name: Build et push backend
-        uses: docker/build-push-action@v5
-        with:
-          push: true
-          tags: ${{ env.BACKEND_IMAGE }}:${{ github.sha }}, ${{ env.BACKEND_IMAGE }}:latest
-          context: ./node-api
-          cache-from: type=gha
-          cache-to: type=gha,mode=max    
+          cache-to: type=gha,mode=max
