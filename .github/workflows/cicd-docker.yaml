@@ -2,8 +2,8 @@ name: CI/CD avec images Docker et Docker Compose
 
 env:
   SERVER_USER: "root"
-  SERVER_PRODUCTION: "54.37.11.162"
   SERVER_STAGING: "78.138.45.88"
+  SERVER_PRODUCTION: "54.37.11.162"
 
 
 concurrency: 
