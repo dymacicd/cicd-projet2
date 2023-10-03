@@ -36,7 +36,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: ${{ FRONTEND_IMAGE }}:${{ github.sha }}, ${{ FRONTEND_IMAGE }}:latest
+          tags: ${{ env.FRONTEND_IMAGE }}:${{ github.sha }}, ${{ env.FRONTEND_IMAGE }}:latest
           context: ./frontend
           cache-from: type=gha
           cache-to: type=gha,mode=max       
@@ -45,7 +45,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: ${{ BACKEND_IMAGE }}:${{ github.sha }}, ${{ BACKEND_IMAGE }}:latest
+          tags: ${{ env.BACKEND_IMAGE }}:${{ github.sha }}, ${{ env.BACKEND_IMAGE }}:latest
           context: ./node-api
           cache-from: type=gha
           cache-to: type=gha,mode=max    
