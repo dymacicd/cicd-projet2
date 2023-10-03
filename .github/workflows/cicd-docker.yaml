@@ -153,8 +153,8 @@ jobs:
     - name: déployer
       uses: ./.github/actions/deploy
       with:
-        server_ip: SERVER_STAGING
-        secret_key: OVH_STAGING_PKEY
+        server_ip: ${{ env.SERVER_STAGING }}
+        secret_key: ${{ secrets.OVH_STAGING_PKEY }}
   
   deploy_production:
     runs-on: ubuntu-latest
@@ -167,5 +167,5 @@ jobs:
     - name: déployer
       uses: ./.github/actions/deploy
       with:
-        server_ip: SERVER_PRODUCTION
-        secret_key: OVH_PROD_PKEY
+        server_ip: ${{ env.SERVER_PRODUCTION }}
+        secret_key: ${{ secrets.OVH_PRODUCTION_PKEY }}
