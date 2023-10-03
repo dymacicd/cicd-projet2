@@ -144,6 +144,7 @@ jobs:
   #         docker compose down -v --remove-orphans
 
   deploy_staging:
+    # needs: [e2e]
     runs-on: ubuntu-latest
     environment:
       name: staging
