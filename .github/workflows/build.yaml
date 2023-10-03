@@ -17,6 +17,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Mise en place de Buildx
+        uses: docker/setup-buildx-action@v3
       
       - name: Login sur GitHub Package Registry
         uses: docker/login-action@v3
@@ -25,16 +28,20 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push frontend
+      - name: Build et push frontend
         uses: docker/build-push-action@v5
         with:
           push: true
           tags: ${{ github.sha }}, latest
-          context: ./frontend         
+          context: ./frontend
+          cache-from: type=gha
+          cache-to: type=gha,mode=max       
 
-      - name: Build and push backend
+      - name: Build et push backend
         uses: docker/build-push-action@v5
         with:
           push: true
           tags: ${{ github.sha }}, latest
           context: ./node-api
+          cache-from: type=gha
+          cache-to: type=gha,mode=max    
