@@ -1,5 +1,13 @@
 name: CI/CD avec images Docker et Docker Compose
 
+env:
+  SERVER_USER: "root"
+  SERVER_IP: "54.37.11.162"
+
+concurrency: 
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches:
@@ -141,7 +149,6 @@ jobs:
     - name: checkout le code
       uses: actions/checkout@v4
     
-
     - name: déployer sur le serveur
       run: |
         eval $(ssh-agent -s)
