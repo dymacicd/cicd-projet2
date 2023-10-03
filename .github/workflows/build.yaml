@@ -36,8 +36,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          registry: ghcr.io
-          tags: ${{ github.sha }}, latest
+          tags: ${{ FRONTEND_IMAGE }}:${{ github.sha }}, ${{ FRONTEND_IMAGE }}:latest
           context: ./frontend
           cache-from: type=gha
           cache-to: type=gha,mode=max       
@@ -46,8 +45,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          registry: ghcr.io
-          tags: ${{ github.sha }}, latest
+          tags: ${{ BACKEND_IMAGE }}:${{ github.sha }}, ${{ BACKEND_IMAGE }}:latest
           context: ./node-api
           cache-from: type=gha
           cache-to: type=gha,mode=max    
