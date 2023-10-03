@@ -32,6 +32,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
+          registry: ghcr.io
           tags: ${{ github.sha }}, latest
           context: ./frontend
           cache-from: type=gha
@@ -41,6 +42,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
+          registry: ghcr.io
           tags: ${{ github.sha }}, latest
           context: ./node-api
           cache-from: type=gha
