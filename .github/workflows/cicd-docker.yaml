@@ -158,9 +158,9 @@ jobs:
         ssh-add - <<< "${{ secrets.OVH_STAGING_PKEY }}"
         mkdir -p ~/.ssh
         ssh-keyscan -H ${{ env.SERVER_STAGING }} >> ~/.ssh/known_hosts
-        scp -r docker-compose.prod.yml ${{ env.SERVER_USER }}@${{ env.SERVER_STAGING }}:/var/www/docker-compose.prod.yml
+        scp -r docker-compose.prod.yml ${{ env.SERVER_USER }}@${{ env.SERVER_STAGING }}:/root/docker-compose.prod.yml
         ssh ${{ env.SERVER_USER }}@${{ env.SERVER_STAGING }} "docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} &&
-          docker compose -f /var/www/docker-compose.prod.yml up -d --force-recreate"
+          docker compose -f /root/docker-compose.prod.yml up -d --force-recreate"
 
   deploy_production:
     runs-on: ubuntu-latest
@@ -178,6 +178,6 @@ jobs:
         ssh-add - <<< "${{ secrets.OVH_PROD_PKEY }}"
         mkdir -p ~/.ssh
         ssh-keyscan -H ${{ env.SERVER_PRODUCTION }} >> ~/.ssh/known_hosts
-        scp -r docker-compose.prod.yml ${{ env.SERVER_USER }}@${{ env.SERVER_PRODUCTION }}:/var/www/docker-compose.prod.yml
+        scp -r docker-compose.prod.yml ${{ env.SERVER_USER }}@${{ env.SERVER_PRODUCTION }}:/root/docker-compose.prod.yml
         ssh ${{ env.SERVER_USER }}@${{ env.SERVER_PRODUCTION }} "docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} &&
-          docker compose -f /var/www/docker-compose.prod.yml up -d --force-recreate"
+          docker compose -f /root/docker-compose.prod.yml up -d --force-recreate"
