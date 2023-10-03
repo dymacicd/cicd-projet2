@@ -8,9 +8,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
     strategy:
       matrix:
-        path: ['node-api']
+        path: ['frontend', 'node-api']
         include:
           - path: 'frontend'
             full_image_name: ghcr.io/${{ github.repository }}/frontend
