@@ -17,7 +17,7 @@ runs:
       shell: bash
       run: |
         eval $(ssh-agent -s)
-        ssh-add - <<< ${{ inputs.secret_key }}
+        ssh-add - <<< "${{ inputs.secret_key }}"
         mkdir -p ~/.ssh
         ssh-keyscan -H ${{ inputs.server_ip }} >> ~/.ssh/known_hosts
         scp -r docker-compose.prod.yml root@${{ inputs.server_ip }}:/root/docker-compose.prod.yml

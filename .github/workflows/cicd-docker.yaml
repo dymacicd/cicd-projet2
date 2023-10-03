@@ -171,3 +171,4 @@ jobs:
       with:
         server_ip: ${{ env.SERVER_PRODUCTION }}
         secret_key: ${{ secrets.OVH_PRODUCTION_PKEY }}
+        token_github: ${{ secrets.GITHUB_TOKEN }}
